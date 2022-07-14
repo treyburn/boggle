@@ -16,7 +16,7 @@ import (
 const serviceAddress = "localhost:50051"
 
 func main() {
-	client := buildClinet()
+	client := buildClient()
 
 	args := os.Args
 
@@ -46,7 +46,7 @@ func main() {
 	}
 }
 
-func buildClinet() api.BoggleServiceClient {
+func buildClient() api.BoggleServiceClient {
 	conn, err := grpc.Dial(serviceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalln(err)
