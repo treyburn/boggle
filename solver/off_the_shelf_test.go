@@ -19,7 +19,7 @@ func TestOffTheShelfSolver_Solve(t *testing.T) {
 	require.NoError(t, err)
 
 	repo := newRepoSpy()
-	ots := NewOffTheShelfSolver(repo, logger, testDictionary)
+	ots := NewOffTheShelf(repo, logger, testDictionary)
 
 	ots.Solve("testid", board)
 	solution := repo.Get("testid")

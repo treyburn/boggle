@@ -11,13 +11,13 @@ type Repository interface {
 	Put(id string, solutions []string)
 }
 
-type OffTheShelfSolver struct {
+type OffTheShelf struct {
 	repo       Repository
 	dictionary string
 	logger     *zap.Logger
 }
 
-func (ots *OffTheShelfSolver) Solve(id, board string) {
+func (ots *OffTheShelf) Solve(id, board string) {
 	b, err := parseBoard(board)
 	if err != nil {
 		ots.logger.Error("issue parsing board", zap.Error(err))
@@ -37,8 +37,8 @@ func (ots *OffTheShelfSolver) Solve(id, board string) {
 	ots.repo.Put(id, solution)
 }
 
-func NewOffTheShelfSolver(repo Repository, logger *zap.Logger, filepath string) *OffTheShelfSolver {
-	return &OffTheShelfSolver{
+func NewOffTheShelf(repo Repository, logger *zap.Logger, filepath string) *OffTheShelf {
+	return &OffTheShelf{
 		repo:       repo,
 		dictionary: filepath,
 		logger:     logger,

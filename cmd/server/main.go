@@ -27,7 +27,7 @@ func main() {
 		logger.Error("creating filepath", zap.Error(err))
 	}
 	repo := repository.NewInMemory()
-	sol := solver.NewOffTheShelfSolver(repo, logger, dictionary)
+	sol := solver.NewOffTheShelf(repo, logger, dictionary)
 
 	service := rpc.NewBoggleService(repo, sol, logger)
 	server := grpc.NewServer()
