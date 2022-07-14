@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package api;
+option go_package="/api";
+
+message SolveRequest {
+  string board = 1;
+}
+
+message SolveResponse{
+  string id = 1;
+}
+
+message SolutionRequest{
+  string id = 1;
+}
+
+message SolutionResponse{
+  repeated string words = 1;
+}
+
+service BoggleService {
+  rpc Solve(SolveRequest) returns (SolveResponse);
+  rpc Solution(SolutionRequest) returns (SolutionResponse);
+}
