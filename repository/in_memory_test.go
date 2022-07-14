@@ -2,9 +2,10 @@ package repository
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"sync"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestInMemoryRepo_Get_Err(t *testing.T) {
