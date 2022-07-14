@@ -1,0 +1,20 @@
+FROM golang:1.18
+
+WORKDIR /usr/src/boggle
+
+ENV API_DIR = /usr/src/boggle/api
+
+COPY ./api ./api
+
+RUN apt-get update -y && \
+    apt-get install -y protobuf-compiler
+
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.0
+
+RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2.0
+
+RUN export PATH="$PATH:$(go env GOPATH)/bin"
+
+CMD protoc -I . --go_out=. \
+    --go-grpc_out=. \
+    ./api/proto/boggle.proto

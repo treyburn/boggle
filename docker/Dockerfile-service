@@ -1,0 +1,9 @@
+FROM golang:1.18
+
+WORKDIR /usr/src/boggle
+
+COPY . .
+
+RUN go build -o ./build/service ./cmd/server
+
+ENTRYPOINT ./build/service
