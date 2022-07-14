@@ -56,6 +56,7 @@ func buildClinet() api.BoggleServiceClient {
 
 func help() {
 	fmt.Println("Invalid arguments")
+	fmt.Println("Valid arguments are \"Solve\" and \"Solution\"")
 	fmt.Println("Example usage for solve: boggle-cli solve \"a,b,c;d,a,a;d,t,t\"")
 	fmt.Println("Note: the board should have lines separated by ; and characters separated by comma")
 	fmt.Println("Example usage for solution: boggle-cli solution \"the-id-you-got-from-solve\"")
