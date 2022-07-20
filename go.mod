@@ -3,7 +3,6 @@ module github.com/treyburn/boggle
 go 1.18
 
 require (
-	github.com/gammazero/bogglesolver v0.0.0-20200125090101-5033ed9b72a2
 	github.com/google/uuid v1.3.0
 	github.com/stretchr/testify v1.8.0
 	go.uber.org/zap v1.21.0
@@ -13,7 +12,6 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/gammazero/deque v0.0.0-20200124200322-7e84b94275b8 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/objx v0.4.0 // indirect

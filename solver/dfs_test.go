@@ -88,3 +88,25 @@ func TestDFS_Solve(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, wantSolutionLength, len(got))
 }
+
+type repoSpy struct {
+	cache map[string][]string
+}
+
+func (rs *repoSpy) Put(id string, solution []string) {
+	rs.cache[id] = solution
+}
+
+func (rs *repoSpy) Get(id string) ([]string, error) {
+	return rs.cache[id], nil
+}
+
+func (rs *repoSpy) Delete(id string) error {
+	return nil
+}
+
+func newRepoSpy() *repoSpy {
+	c := make(map[string][]string, 0)
+
+	return &repoSpy{cache: c}
+}
