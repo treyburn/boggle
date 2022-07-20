@@ -2,10 +2,11 @@ package solver
 
 import (
 	"errors"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
-	"testing"
 )
 
 func Test_buildBoard(t *testing.T) {
@@ -82,7 +83,7 @@ func TestDFS_Solve(t *testing.T) {
 	dfs := NewDfs(root, repo, logger)
 
 	dfs.Solve(testId, board)
-	
+
 	got, err := repo.Get(testId)
 	assert.NoError(t, err)
 	assert.Equal(t, wantSolutionLength, len(got))

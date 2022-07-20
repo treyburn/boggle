@@ -3,9 +3,11 @@ package solver
 import (
 	"errors"
 	"fmt"
-	"github.com/treyburn/boggle/repository"
-	"go.uber.org/zap"
 	"strings"
+
+	"github.com/treyburn/boggle/repository"
+
+	"go.uber.org/zap"
 )
 
 type DFS struct {
