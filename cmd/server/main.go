@@ -15,7 +15,11 @@ import (
 	"google.golang.org/grpc"
 )
 
-const port = 50051
+const (
+	port = 50051
+
+	useCustomerSolver = true
+)
 
 func main() {
 	logger, err := zap.NewProduction()
@@ -27,7 +31,13 @@ func main() {
 		logger.Error("creating filepath", zap.Error(err))
 	}
 	repo := repository.NewInMemory()
-	sol := solver.NewOffTheShelf(repo, logger, dictionary)
+
+	var sol solver.Solver
+	if !useCustomerSolver {
+		sol = solver.NewOffTheShelf(dictionary, repo, logger)
+	} else {
+		sol = buildCustomSolver(dictionary, repo)
+	}
 
 	service := rpc.NewBoggleService(repo, sol, logger)
 	server := grpc.NewServer()
@@ -43,5 +53,4 @@ func main() {
 	if err := server.Serve(listener); err != nil {
 		logger.Fatal("server shutting down", zap.Error(err))
 	}
-
 }

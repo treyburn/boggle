@@ -3,16 +3,14 @@ package solver
 import (
 	"strings"
 
+	"github.com/treyburn/boggle/repository"
+
 	"github.com/gammazero/bogglesolver/solver"
 	"go.uber.org/zap"
 )
 
-type Repository interface {
-	Put(id string, solutions []string)
-}
-
 type OffTheShelf struct {
-	repo       Repository
+	repo       repository.Repository
 	dictionary string
 	logger     *zap.Logger
 }
@@ -20,24 +18,24 @@ type OffTheShelf struct {
 func (ots *OffTheShelf) Solve(id, board string) {
 	b, err := parseBoard(board)
 	if err != nil {
-		ots.logger.Error("issue parsing board", zap.Error(err))
+		ots.logger.Error("issue parsing board", zap.Error(err), zap.String("ID", id))
 		return
 	}
 	boggleSolver, err := solver.NewSolver(b.xLen, b.yLen, ots.dictionary, true)
 	if err != nil {
-		ots.logger.Error("issue creating solver", zap.Error(err))
+		ots.logger.Error("issue creating solver", zap.Error(err), zap.String("ID", id))
 		return
 	}
 	solution, err := boggleSolver.Solve(b.board)
 	if err != nil {
-		ots.logger.Error("issue while solving", zap.Error(err))
+		ots.logger.Error("issue while solving", zap.Error(err), zap.String("ID", id))
 		return
 	}
 
 	ots.repo.Put(id, solution)
 }
 
-func NewOffTheShelf(repo Repository, logger *zap.Logger, filepath string) *OffTheShelf {
+func NewOffTheShelf(filepath string, repo repository.Repository, logger *zap.Logger) *OffTheShelf {
 	return &OffTheShelf{
 		repo:       repo,
 		dictionary: filepath,

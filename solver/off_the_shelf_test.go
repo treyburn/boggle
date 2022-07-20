@@ -19,10 +19,10 @@ func TestOffTheShelfSolver_Solve(t *testing.T) {
 	require.NoError(t, err)
 
 	repo := newRepoSpy()
-	ots := NewOffTheShelf(repo, logger, testDictionary)
+	ots := NewOffTheShelf(testDictionary, repo, logger)
 
 	ots.Solve("testid", board)
-	solution := repo.Get("testid")
+	solution, _ := repo.Get("testid")
 	assert.Equal(t, wantSolutionLength, len(solution))
 }
 
@@ -34,8 +34,12 @@ func (rs *repoSpy) Put(id string, solution []string) {
 	rs.cache[id] = solution
 }
 
-func (rs *repoSpy) Get(id string) []string {
-	return rs.cache[id]
+func (rs *repoSpy) Get(id string) ([]string, error) {
+	return rs.cache[id], nil
+}
+
+func (rs *repoSpy) Delete(id string) error {
+	return nil
 }
 
 func newRepoSpy() *repoSpy {

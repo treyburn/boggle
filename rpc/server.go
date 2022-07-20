@@ -4,25 +4,17 @@ import (
 	"context"
 
 	"github.com/treyburn/boggle/api"
+	"github.com/treyburn/boggle/repository"
+	"github.com/treyburn/boggle/solver"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
-type Repository interface {
-	Get(id string) ([]string, error)
-	Put(id string, solutions []string)
-	Delete(id string) error
-}
-
-type Solver interface {
-	Solve(id string, board string)
-}
-
 type BoggleService struct {
 	api.UnimplementedBoggleServiceServer
-	solver Solver
-	repo   Repository
+	solver solver.Solver
+	repo   repository.Repository
 	logger *zap.Logger
 }
 
@@ -47,7 +39,7 @@ func (bs *BoggleService) Solution(_ context.Context, req *api.SolutionRequest) (
 	return &api.SolutionResponse{Words: solution}, nil
 }
 
-func NewBoggleService(repo Repository, solver Solver, logger *zap.Logger) *BoggleService {
+func NewBoggleService(repo repository.Repository, solver solver.Solver, logger *zap.Logger) *BoggleService {
 	return &BoggleService{
 		solver: solver,
 		repo:   repo,
