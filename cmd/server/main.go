@@ -36,7 +36,10 @@ func main() {
 	if !useCustomerSolver {
 		sol = solver.NewOffTheShelf(dictionary, repo, logger)
 	} else {
-		sol = buildCustomSolver(dictionary, repo)
+		sol, err = buildCustomSolver(dictionary, repo, logger)
+		if err != nil {
+			logger.Error("creating solver", zap.Error(err))
+		}
 	}
 
 	service := rpc.NewBoggleService(repo, sol, logger)

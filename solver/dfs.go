@@ -11,10 +11,10 @@ import (
 type DFS struct {
 	dictionary *Trie
 	repo       repository.Repository
-	logger     zap.Logger
+	logger     *zap.Logger
 }
 
-func NewDfs(dict *Trie, repo repository.Repository, log zap.Logger) *DFS {
+func NewDfs(dict *Trie, repo repository.Repository, log *zap.Logger) *DFS {
 	return &DFS{
 		dictionary: dict,
 		repo:       repo,
@@ -23,13 +23,14 @@ func NewDfs(dict *Trie, repo repository.Repository, log zap.Logger) *DFS {
 }
 
 func (d *DFS) Solve(id string, board string) {
-	b, err := buildRuneBoard(board)
+	rb, err := buildRuneBoard(board)
 	if err != nil {
 		d.logger.Error("issue building board", zap.Error(err), zap.String("ID", id))
 		return
 	}
+	graph := buildGraph(rb)
 
-	answers, err := d.search(b)
+	answers, err := d.search(graph)
 	if err != nil {
 		d.logger.Error("issue searching for solution", zap.Error(err), zap.String("ID", id))
 	}
@@ -37,32 +38,36 @@ func (d *DFS) Solve(id string, board string) {
 	d.repo.Put(id, answers)
 }
 
-func (d *DFS) search(board [][]rune) ([]string, error) {
+func (d *DFS) search(graph [][]*Node) ([]string, error) {
 	answers := make([]string, 0)
-	for yIdx, row := range board {
-		for xIdx, char := range row {
-			word := []rune{char}
+	for _, row := range graph {
+		for _, node := range row {
+			word := []rune{node.char}
 			if !d.dictionary.IsPrefix(word) {
 				continue
 			}
 			if d.dictionary.IsWord(word) {
 				answers = append(answers, string(word))
 			}
-			edges := getEdges(xIdx, yIdx, board)
+			edges := getEdges(node, graph)
 			for len(edges) > 0 {
-				word = append(word, edges[0])
+				word = append(word, edges[0].char)
 				if !d.dictionary.IsPrefix(word) {
 					// backtrack word
 					word = word[:len(word)-1]
+					edges = edges[1:]
 					continue
 				}
 				if d.dictionary.IsWord(word) {
 					answers = append(answers, string(word))
 				}
+				subEdges := getEdges(edges[0], graph)
+				subEdges = append(subEdges, edges[1:]...)
+				edges = subEdges
 			}
 		}
 	}
-	return nil, nil
+	return answers, nil
 }
 
 func buildRuneBoard(board string) ([][]rune, error) {
@@ -82,35 +87,4 @@ func buildRuneBoard(board string) ([][]rune, error) {
 		b = append(b, tiles)
 	}
 	return b, nil
-}
-
-func getEdges(x, y int, board [][]rune) []rune {
-	const minX, minY = 0, 0
-	maxY := len(board)
-	maxX := len(board[0])
-
-	posX := x - 1
-	posY := y - 1
-
-	output := make([]rune, 0)
-
-	for posY < maxY && posY <= y+1 {
-		if posY < minY {
-			posY++
-		}
-		for posX < maxX && posX <= x+1 {
-			if posX < minX {
-				posX++
-				continue
-			}
-			if !(posY == y && posX == x) {
-				output = append(output, board[posY][posX])
-			}
-			posX++
-		}
-		posY++
-		posX = x - 1
-	}
-
-	return output
 }

@@ -3,6 +3,8 @@ package solver
 import (
 	"errors"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 	"testing"
 )
 
@@ -35,29 +37,53 @@ func Test_buildBoard(t *testing.T) {
 	}
 }
 
-func Test_getEdges(t *testing.T) {
-	type testCase struct {
-		name      string
-		board     [][]rune
-		x         int
-		y         int
-		wantEdges []rune
+func TestDFS_search(t *testing.T) {
+	wantSolutionLength := 6
+	board := "a,b,c;d,a,a;d,t,t"
+
+	logger, err := zap.NewDevelopment()
+	require.NoError(t, err)
+
+	data := [][]rune{[]rune("bat"), []rune("cat"), []rune("tac"), []rune("tab"), []rune("abc")}
+
+	root := NewTrie()
+	for _, word := range data {
+		root.Insert(word)
 	}
 
-	var tests = []testCase{
-		{"3x3 - middle", [][]rune{{1, 2, 3}, {1, 2, 3}, {1, 2, 3}}, 1, 1, []rune{1, 2, 3, 1, 3, 1, 2, 3}},
-		{"3x3 - upper center", [][]rune{{1, 2, 3}, {1, 2, 3}, {1, 2, 3}}, 1, 0, []rune{1, 3, 1, 2, 3}},
-		{"3x3 - upper left", [][]rune{{1, 2, 3}, {1, 2, 3}, {1, 2, 3}}, 0, 0, []rune{2, 1, 2}},
-		{"3x3 - lower right", [][]rune{{1, 2, 3}, {1, 2, 3}, {1, 2, 3}}, 2, 2, []rune{2, 3, 2}},
+	rb, err := buildRuneBoard(board)
+	require.NoError(t, err)
+	graph := buildGraph(rb)
+
+	repo := newRepoSpy()
+	dfs := NewDfs(root, repo, logger)
+
+	got, err := dfs.search(graph)
+	assert.NoError(t, err)
+	assert.Equal(t, wantSolutionLength, len(got))
+}
+
+func TestDFS_Solve(t *testing.T) {
+	testId := "test"
+	wantSolutionLength := 6
+	board := "a,b,c;d,a,a;d,t,t"
+
+	logger, err := zap.NewDevelopment()
+	require.NoError(t, err)
+
+	data := [][]rune{[]rune("bat"), []rune("cat"), []rune("tac"), []rune("tab"), []rune("abc")}
+
+	root := NewTrie()
+	for _, word := range data {
+		root.Insert(word)
 	}
 
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			tc := test
+	repo := newRepoSpy()
+	dfs := NewDfs(root, repo, logger)
 
-			got := getEdges(tc.x, tc.y, tc.board)
-
-			assert.Equal(t, tc.wantEdges, got)
-		})
-	}
+	dfs.Solve(testId, board)
+	
+	got, err := repo.Get(testId)
+	assert.NoError(t, err)
+	assert.Equal(t, wantSolutionLength, len(got))
 }
